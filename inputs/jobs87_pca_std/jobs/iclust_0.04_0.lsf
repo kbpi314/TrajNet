@@ -1,0 +1,32 @@
+
+#!/bin/bash
+#BSUB -q gpu
+#BSUB -W 1:00
+#BSUB -J iclust_0.0
+#BSUB -P acc_clemej05a
+#BSUB -n 1
+#BSUB -R rusage[mem=4000]
+#BSUB -o %J.stdout
+#BSUB -eo %J.stderr
+#BSUB -L /bin/bash
+
+
+module load anaconda3;
+source activate iclust; 
+
+export http_proxy="http://nfs01.chimera.hpc.mssm.edu:3128/";
+export https_proxy="https://nfs01.chimera.hpc.mssm.edu:3128/";
+export ftp_proxy="http://nfs01.chimera.hpc.mssm.edu:3128/";
+export rsync_proxy="http://nfs01.chimera.hpc.mssm.edu:3128/";
+export no_proxy="localhost,127.0.0.1"; 
+
+ICPROJ=/sc/arion/projects/clemej05a/kevin/iclust;
+ICPATH=/sc/arion/projects/clemej05a/kevin/Repositories/iclust/scripts;
+
+rm -rf /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0
+mkdir /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0 /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0/trajs/ /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0/iclust/;
+
+python /sc/arion/projects/clemej05a/kevin/Repositories//iclust/scripts/plot_correlations.py -i /sc/arion/projects/clemej05a/kevin/iclust/inputs/iclust_loclust_sims/df_sim_0.04_0.tsv -o /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0/trajs/  --unlabeled -s 0 -n 1 -sv 0 -dl sims --lines --fixaxis --axis_off -m cc --traj;
+
+python /sc/arion/projects/clemej05a/kevin/Repositories//iclust/scripts/image_cluster.py -i /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0/trajs/ -o /sc/arion/projects/clemej05a/kevin/iclust/outputs/jobs87/results/sim_0.04_0/iclust/ -l False -min 2 -max 20 -m cc -nzv True -std True -pca True -npc 3
+
